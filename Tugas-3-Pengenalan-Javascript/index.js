@@ -22,7 +22,7 @@ var n2 = parseInt(kataKedua);
 var n3 = parseInt(kataKetiga);
 var n4 = parseInt(kataKeempat);
 
-var jawabanSoal2 = n1 + n2 * n3 + n4
+var jawabanSoal2 = n1 * n2 + n3 % n4
 
 //Soal 3
 var kalimat = 'wah javascript itu keren sekali'; 
