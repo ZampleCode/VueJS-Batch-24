@@ -1,3 +1,4 @@
+  //Soal 1
   var nilai = 76
   if (nilai >= 85) {
     console.log('indeksnya A')
@@ -98,9 +99,8 @@
       default:
         text = ' - I hate this task'
 
-      // code block
     }
-    console.log(x, text, mod)
+    console.log(x + text)
     if (mod == 2)
       console.log(pemisah)
   }
