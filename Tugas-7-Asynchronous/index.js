@@ -26,8 +26,8 @@ const getBookz = (time) => {
   } else if (time === 0) {
     console.log('waktu saya habis')
   } else {
-    readBooks(waktu, books[0], getBookz)
+    console.log('waktu tidak didefinisikan')
   }
 }
-getBookz()
+getBookz(waktu)
 
