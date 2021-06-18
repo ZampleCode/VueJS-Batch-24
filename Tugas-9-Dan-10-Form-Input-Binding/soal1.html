@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nganu</title>
+</head>
+<body>
+<div id="app">
+    <input type="text" v-model="cari" placeholder="Masukkan Kata Kunci"/>
+
+    <p v-if="buku.length" class="table">
+    <p>
+    <p v-for="item in hasil">
+        {{item.title}}
+    </p>
+    </p>
+    </p>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+  var vm = new Vue({
+    el: '#app',
+    data: {
+      cari: null,
+      buku: [
+        {title: 'Kalkulus Dasar'},
+        {title: 'Fisika Dasar'},
+        {title: 'Aljabar Linear Elementer'},
+        {title: 'Aljabar Abstrak'},
+        {title: 'Algoritma Pemrograman'}
+      ]
+    },
+    computed: {
+      hasil () {
+        if (this.cari) {
+          return this.buku.filter((item) => {
+            return this.cari.toLowerCase().split(' ').every(v => item.title.toLowerCase().includes(v))
+          })
+        } else {
+          return this.buku
+        }
+      }
+    }
+  })
+</script>
+</body>
+</html>
