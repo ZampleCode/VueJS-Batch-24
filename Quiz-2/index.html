@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yaskur</title>
+</head>
+<body>
+<div id="app">
+    <form @submit.prevent="submitForm()">
+        <input type="text" placeholder="add Nama" v-model:value="newName"/>
+        <input type="submit" v-model:value="status">
+    </form>
+    <p v-for="item in users">
+        {{item.name}} ||
+        <button @click="Edit(item)">Edit</button>
+        ||
+        <button @click="Delete(item)">Delete</button>
+    </p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+  var vm = new Vue({
+    el: '#app',
+    data: {
+      status: 'add',
+      newName: '',
+      edit: '',
+      users: [
+        {'name': 'Dyas Yaskur'},
+        {'name': 'Umar bin Khatab'},
+        {'name': 'Ammaar'}
+      ]
+    },
+    methods: {
+      submitForm: function () {
+        if (this.status === 'add') {
+          this.users.push({'name': this.newName})
+          this.newName = ''
+          this.status = 'add'
+        } else {
+          this.users[this.edit].name = this.newName
+          this.newName = ''
+          this.status = 'add'
+        }
+      },
+      Edit: function (item) {
+        this.newName = item.name
+        this.edit = this.users.indexOf(item)
+        this.status = 'edit'
+      },
+      Delete: function (item) {
+        if (confirm('Are you sure?')) {
+          this.users.splice(this.users.indexOf(item), 1)
+        } else {
+        }
+      }
+    }
+  })
+</script>
+</body>
+</html>
