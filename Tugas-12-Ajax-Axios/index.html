@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yaskur</title>
+    <style>
+        form {
+            border: 1px solid #FFFFFF;
+            padding: 5px;
+            width: 225px;
+            background: #efefef;
+        }
+
+        label {
+            display: block;
+            margin-top: 5px;
+        }
+
+        input, textarea, select, option {
+            min-width: 200px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+
+</head>
+<body>
+<div id="app" class="section">
+    <form @submit.prevent="submitForm()">
+        <p v-if="errors.length">
+            <b>Tolong ikuti aturan</b>
+        <ul>
+            <li v-for="error in errors">{{ error }}</li>
+        </ul>
+        </p>
+        <label>Name : {{ f.name }}</label>
+        <input class="input is-primary" type="text" :disabled="buttonStatus== 'upload'" name="name" ref="name" v-model="f.name">
+        <label>address : {{ f.address }}</label>
+        <textarea class="textarea is-primary" name="address" :disabled="buttonStatus== 'upload'" ref="address" v-model="f.address"></textarea>
+        <label>No. HP : {{ f.no_hp }}</label>
+        <input class="input is-primary" type="text" :disabled="buttonStatus== 'upload'" name="no_hp" ref="no_hp" v-model="f.no_hp">
+        <br>
+        <div v-if="buttonStatus == 'submit'">
+            <input type="submit" value="SUBMIT" class="button is-primary">
+        </div>
+        <div v-else-if="buttonStatus == 'update'">
+            <input type="button" @click="updateMember(idEditMember)" value="UPDATE" class="button is-info">
+            <input type="button" value="CANCEL" @click="clearForm" style="margin-top:5px" class="button is-warning">
+        </div>
+        <div v-else-if="buttonStatus == 'upload'">
+            <input type="file" name="photo" ref="photo">
+            <input type="button" value="UPLOAD" @click="submitPhoto(idUploadMember)" style="margin-top: 5px; margin-bottom: 5px;" class="button is-info">
+            <input type="button" value="CANCEL" @click="clearForm" style="margin-top:5px" class="button is-warning">
+        </div>
+
+    </form>
+    <br><br>
+
+    <table border=1 class="table">
+        <thead>
+        <tr>
+            <th><abbr title="Position">Photo</abbr></th>
+            <th>Data</th>
+            <th><abbr title="Played">Action</abbr></th>
+        </tr>
+        </thead>
+
+        <tr v-for="member of members">
+            <td>
+                <img width=100 :src="member.photo_profile ? imageUrl +  member.photo_profile  : 'https://via.placeholder.com/150x150'" alt="">
+            </td>
+            <td>
+                <b>Name : </b>{{member.name}}
+                <br>
+                <b>Address : </b> {{member.address}}
+                <br>
+                <b>No.HP : </b> {{member.no_hp}}
+                <br>
+            </td>
+            <td>
+                <button class="button is-primary" @click="editMember(member)">Edit</button>
+                <button class="button is-danger" @click="removeMember(member.id)">Hapus</button>
+                <button class="button is-info" @click="uploadPhoto(member)">Upload Foto</button>
+            </td>
+        </tr>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  axios.defaults.baseURL = 'http://demo-api-vue.sanbercloud.com/api'
+  axios.defaults.headers.post['Content-Type'] = 'application/json'
+  axios.defaults.headers.post['Accept'] = 'application/json'
+  axios.defaults.headers.post['Powered-By'] = 'Nganu kae lo'
+  var vm = new Vue({
+    el: '#app',
+    data: {
+      f: {
+        name: '',
+        address: '',
+        no_hp: ''
+      },
+      errors: [],
+      members: [],
+      imageUrl: 'http://demo-api-vue.sanbercloud.com',
+      buttonStatus: 'submit',
+      idEditMember: null,
+      idUploadMember: null
+    },
+    methods: {
+      getMembers: function () {
+        axios.get('/member')
+          .then((response) => {
+            this.members = response.data.members
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      },
+      clearForm: function () {
+        this.f.name = ''
+        this.f.address = ''
+        this.f.no_hp = ''
+      },
+      validationForm: function () {
+        this.errors = []
+        if (this.f.name.length < 5) {
+          this.errors.push('Nama minimal 5')
+          this.$refs.name.focus()
+        }
+        if (this.f.address.length > 30) {
+          this.errors.push('deskripsi kepanjangan')
+          this.$refs.descripton.focus()
+        }
+        if (this.f.no_hp.length < 5) {
+          this.errors.push('Nomor HP Minimal 5')
+          this.$refs.descripton.focus()
+        }
+      },
+      submitForm: function () {
+        this.validationForm()
+        if (this.errors.length === 0) {
+          axios.post('/member', this.f)
+            .then((response) => {
+              this.clearForm()
+              this.getMembers()
+              alert(response.data.message)
+              console.log(response.data)
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+        }
+      },
+      removeMember: function (id) {
+        axios.delete(`/member/${id}`)
+          .then((response) => {
+            this.getMembers()
+            alert(response.data.message)
+            console.log(response)
+          })
+          .catch(() => {
+            console.log(error)
+          })
+        console.log(id)
+      },
+      editMember: function (member) {
+        this.f.name = member.name
+        this.f.address = member.address
+        this.f.no_hp = member.no_hp
+        this.buttonStatus = 'update'
+        this.idEditMember = member.id
+        // console.log(blog)
+      },
+      updateMember: function (id) {
+        this.validationForm()
+        if (this.errors.length === 0) {
+          axios.put(`/member/${id}`, this.f)
+            .then((response) => {
+              this.clearForm()
+              this.getMembers()
+              alert(response.data.message)
+              this.buttonStatus = 'submit'
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+        }
+      },
+      uploadPhoto: function (member) {
+        this.f.name = member.name
+        this.f.address = member.address
+        this.f.no_hp = member.no_hp
+        this.buttonStatus = 'upload'
+        this.idUploadMember = member.id
+      },
+      submitPhoto: function (id) {
+        let file = this.$refs.photo.files[0]
+        let formData = new FormData()
+        formData.append('photo_profile', file)
+        axios.post(`/member/${id}/upload-photo-profile`, formData)
+          .then((response) => {
+            this.clearForm()
+            this.getMembers()
+            alert(response.data.message)
+            this.buttonStatus = 'submit'
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        // console.log(id)
+      }
+    },
+    created () {
+      this.getMembers()
+    }
+  })
+</script>
+</body>
+</html>
