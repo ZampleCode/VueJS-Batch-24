@@ -20,7 +20,7 @@ const MemberTableRow = {
         </tr>
     `,
   data () {
-    return {imageUrl: 'http://demo-api-vue.sanbercloud.com'}
+    return {imageUrl: 'https://demo-api-vue.sanbercloud.com'}
   },
   props: ['member', 'edit', 'remove', 'upload']
 }
