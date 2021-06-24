@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+    <h1>Belajar Vue Router</h1>
+    <form @submit.prevent="submitForm()">
+        <label>Login :</label>
+        <input class="input is-primary" type="text" name="name" ref="name" v-model="login">
+
+    </form>
+    <p v-if="login"> anda telah login sebagai {{ login }}</p>
+    <p v-else> anda telah belum login</p>
+    <!-- Pengganti tag <a href=""></a>  -->
+    <router-link to="/halaman1">Halaman 1</router-link>
+    <router-link to="/halaman2">Halaman 2</router-link>
+    <router-link to="/halaman3">Halaman 3</router-link>
+    <hr>
+    <!-- Untuk Menampilkan component secara dinamis , sesuai dengan route yang diakses -->
+    <router-view></router-view>
+</div>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+<script type="module">
+  var login
+  const halaman1 = {template: '<div>Ini Halaman 1</div>', props: ['login']}
+  const halaman2 = {template: '<div>Ini Halaman 2</div>', props: ['login']}
+  const halaman3 = {template: '<div>Ini Halaman 3</div>', props: ['login']}
+  const routes = [
+    {path: '/halaman1', component: halaman1, alias: '/home'},
+    {path: '/halaman2', component: halaman2, meta: {login: true}, props: {default: login, sidebar: false}},
+    {path: '/halaman3', component: halaman3, meta: {login: true, role: 'admin'}},
+    {path: '*', redirect: '/halaman1'}
+  ]
+  Vue.use(VueRouter)
+  const router = new VueRouter({
+    routes
+  })
+  router.beforeEach((to, from, next) => {
+    let auth
+    if (to.meta.login) {
+      if (to.meta.role === 'admin')
+        if (vm && vm.login && vm.login === 'admin') {
+          alert('anda berhasil memasuki area terlarang')
+        } else {
+          alert('anda harus login sebagai admin untuk memasuki area terlarang')
+          next(false)
+        }
+      else if (vm && vm.login) {
+        alert('anda berhasil masuk')
+      } else {
+        next(false)
+        alert('anda harus login dulu')
+      }
+    } else {
+      next()
+    }
+    // if(to.meta.role==='admin' && this.login)
+  })
+  var vm = new Vue({
+    el: '#app',
+    router,
+    data: {
+      login
+    }
+  })
+</script>
+</body>
+</html>
